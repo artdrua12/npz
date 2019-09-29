@@ -15,8 +15,7 @@ import axios from "axios";
 export default {
   data() {
     return {
-      inputValue: "",
-      name: "123"
+      inputValue: ""
     };
   },
   mounted() {
@@ -27,12 +26,8 @@ export default {
   methods: {
     Check() {
       sessionStorage.setItem('name',this.inputValue);
+      this.inputValue = ""
       this.$router.push("/admin");
-      // if (this.name == this.inputValue) {
-      //   this.$router.push("/admin");
-      // } else {
-      //   this.inputValue = "";
-      // }
     }
   }
 };
