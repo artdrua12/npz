@@ -1,46 +1,83 @@
 <template>
-  <table>
-    <caption>Пользователь</caption>
-    <tr>
-      <th>Вид</th>
-      <th>Стоимость</th>
-      <th>Количество</th>
-      <th>Операции</th>
-      <th>Сумма</th>
-    </tr>
-    <tr>
-      <td>
-        <select name="mySelect" @change="onChange" text="ddd" v-model="selected">
-          <option v-for="(item, index) in responseMongo" :key="index" :value="index">{{item.name}}</option>
-        </select>
-      </td>
-      <td>
-        <h2>{{priceValue}}</h2>
-      </td>
-      <td>
-        <div class="inputAdvance">
+  <div class="appUser">
+    <table>
+      <tr>
+        <th class="title" colspan="5">
+          <i class="material-icons">redo</i>Покупка
+        </th>
+      </tr>
+      <tr>
+        <th>Кол-во</th>
+        <th>Вал</th>
+        <th>Курс покупки</th>
+        <th>Купить</th>
+        <th>Итого бел.руб</th>
+      </tr>
+      <tr>
+        <td>
+          <input v-model="inputValue" @keypress="onKeypress" />
+        </td>
+
+        <td>
+          <select name="mySelect" @change="onChange" text="ddd" v-model="selected">
+            <option v-for="(item, index) in responseMongo" :key="index" :value="index">{{item.name}}</option>
+          </select>
+        </td>
+        <td>
+          <h2>{{priceValue}} бел.руб</h2>
+        </td>
+        <td>
+          <button @click="buy">
+            <i class="material-icons">redo</i>Купить.
+          </button>
+        </td>
+        <td class="summa">
+          <h2>{{summa}}</h2>
+        </td>
+      </tr>
+    </table>
+
+    <table class="cell">
+      <tr>
+        <th class="title" colspan="5">
+          <i class="material-icons">undo</i>Продажа
+        </th>
+      </tr>
+      <tr>
+        <th>Кол-во</th>
+        <th>Вал</th>
+        <th>Курс продажи</th>
+        <th>Продажа</th>
+        <th>Итого</th>
+      </tr>
+      <tr>
+        <td>
+          <input v-model="inputValueCell" @keypress="onKeypress" />
+        </td>
+        <td>
+          <select name="mySelect" @change="onChangeCell" text="ddd" v-model="selectedCell">
+            <option v-for="(item, index) in responseMongo" :key="index" :value="index">{{item.name}}</option>
+          </select>
+        </td>
+        <td>
+          <h2>{{priceValueCell}} бел.руб</h2>
+        </td>
+        <td>
+          <button @click="cell">
+            <i class="material-icons">undo</i>Продать
+          </button>
+        </td>
+        <td class="summa">
           <input
-            v-model="inputValue"
+            v-model="summaCell"
             ref="refInput"
-            @input="onInput"
-            @keypress="onKeypress"
-            @keydown="onKeydown"
-            @click.stop="inputClick"
+            @keypress="onKeypressPoint"
+            @input="onInputSummaCell"
           />
-          <i class="top material-icons" @click.stop.prevent="updateCount(1)">arrow_drop_up</i>
-          <i class="bottom material-icons" @click.stop.prevent="updateCount(-1)">arrow_drop_down</i>
-        </div>
-      </td>
-      <td>
-        <button @click="Summa">
-          <i class="material-icons">redo</i>Получить
-        </button>
-      </td>
-      <td class="summa">
-        <h2>{{summa}}</h2>
-      </td>
-    </tr>
-  </table>
+        </td>
+      </tr>
+    </table>
+  </div>
 </template>
 
 <script>
@@ -50,71 +87,63 @@ export default {
     return {
       responseMongo: { name: "", price: 0 },
       selected: 0,
+      selectedCell: 0,
       priceValue: 0,
-      inputValue: 0,
-      summa: 0
+      priceValueCell: 0,
+      inputValue: "",
+      summa: 0,
+      inputValueCell: "",
+      summaCell: ""
     };
   },
+
   mounted() {
     axios.get("http://localhost:8081").then(response => {
       //   this.inputValue = response.data[0].dollar;
       //   this.id = response.data[0]._id;
       this.responseMongo = response.data;
       this.priceValue = this.responseMongo[this.selected].price;
+      this.priceValueCell = this.responseMongo[this.selected].price;
     });
   },
   methods: {
-    Summa() {
+    buy() {
       this.summa = this.priceValue * this.inputValue;
     },
+    cell() {
+      let integer = Math.floor(this.inputValueCell);
+      this.inputValueCell = integer;
+      this.summaCell = this.priceValueCell * this.inputValueCell;
+    },
     onChange() {
-      this.inputValue = 0;
-      this.summa = 0;
+      this.inputValue = "";
+      this.summa = "";
       let item = this.responseMongo[this.selected];
       if (!!item) {
         this.priceValue = item.price;
       }
     },
+    onInputSummaCell() {
+      this.inputValueCell = (this.summaCell / this.priceValueCell).toFixed(2);
+    },
+    onChangeCell() {
+      (this.inputValueCell = ""), (this.summaCell = "");
+      let item = this.responseMongo[this.selectedCell];
+      if (!!item) {
+        this.priceValueCell = item.price;
+      }
+    },
     onKeypress(e) {
       let code = e.charCode || e.keyCode;
-      if (code < 48 || code > 57) {
+      if (code < 48  || code > 57) {;
         e.preventDefault();
       }
     },
-    onKeydown(e) {
+        onKeypressPoint(e) {
       let code = e.charCode || e.keyCode;
-      switch (code) {
-        case 40:
-          this.updateCount(-1);
-          e.preventDefault();
-          break;
-        case 38:
-          this.updateCount(1);
-          e.preventDefault();
-          break;
-        default:
-          break;
+      if ((code < 48 && code != 46) || code > 57) {;
+        e.preventDefault();
       }
-    },
-    showClick() {
-      setTimeout(() => {
-        this.$refs.refInput.select();
-      }, 50);
-    },
-    onInput({ target }) {
-      let val = +target.value;
-      this.inputValue = val;
-    },
-    updateCount(value) {
-      this.$refs.refInput.focus();
-      if (this.inputValue + value >= 0) {
-        this.inputValue += value;
-      } else {
-        return;
-      }
-    },
-    inputClick(e) {
-      e.target.select();
     }
   }
 };
@@ -129,7 +158,7 @@ div.user {
 }
 
 .inputAdvance {
-  width: 190px;
+  width: 150px;
   height: 46px;
   align-content: center;
   justify-content: center;
@@ -144,50 +173,56 @@ div.user {
     0 0 1px 1px rgba(0, 1, 6, 0.2);
 }
 .material-icons {
-  font-size: 23px;
+  font-size: 20px;
   user-select: none;
 }
-.inputAdvance .material-icons {
-  color: black;
-}
+
 input {
-  margin: 0 0px 0 10px;
-  flex-basis: 100%;
-  width: 140px;
+  width: 125px;
+  height: 46px;
   font-size: 20px;
-  border: none;
+  border: 2px solid gainsboro;
   background-color: #f8f8f8;
+  box-shadow: 0 1px rgba(255, 255, 255, 0.2) inset, 0 3px 5px rgba(0, 1, 6, 0.5),
+    0 0 1px 1px rgba(0, 1, 6, 0.2);
+  padding: 0px 7px;
 }
 input:focus {
   outline: none;
 }
-caption {
+th.title {
   color: whitesmoke;
-  font-size: 24px;
-  background: #4e4f54;
-  border: 4px solid yellowgreen;
-  border-bottom: none;
   font-size: 36px;
   padding: 20px;
+  text-align: center;
 }
 table {
   background: #4e4f54;
   width: 100%;
   color: whitesmoke;
-  font-size: 20px;
+  /* font-size: 20px; */
   max-width: 800px;
   border: 4px solid yellowgreen;
   border-collapse: collapse;
 }
+table.cell {
+  border: 4px solid #73d7f5;
+  margin-top: 30px;
+}
 td.summa {
   width: 140px;
+  max-width: 140px;
 }
 td,
 th {
   padding: 10px 20px;
+  width: 90px;
 }
 th {
   border: 4px solid yellowgreen;
+}
+.cell th {
+  border: 4px solid #73d7f5;
 }
 th {
   text-align: start;

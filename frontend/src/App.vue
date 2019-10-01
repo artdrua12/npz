@@ -2,9 +2,9 @@
   <div id="app">
     <div class="navigator">
       <img src="./assets/logo.png" />
-      <router-link tag="span" to="/" exact active-class="active">User</router-link>
-      <router-link tag="span" to="/admin" exact active-class="active">Admin</router-link>
-      <router-link tag="span" to="/something" exact active-class="active">Something</router-link>
+      <router-link tag="span" to="/" exact active-class="active">Кассир</router-link>
+      <router-link tag="span" to="/admin" exact active-class="active">Администратор</router-link>
+      <router-link tag="span" to="/something" exact active-class="active">О нас</router-link>
       <!-- <router-link tag="span" to="/checkForm" exact active-class="active">CheckForm</router-link> -->
     </div>
     <transition name="component-fade" mode="out-in">
@@ -45,7 +45,7 @@ export default {
   align-items: flex-end;
 }
 .active {
-  color: wheat;
+  color: rgb(240, 170, 39);
 }
 .component-fade-enter-active,
 .component-fade-leave-active {
