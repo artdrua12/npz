@@ -19,6 +19,7 @@
       <i class="top material-icons" @click.stop.prevent="updateCount(1)">arrow_drop_up</i>
       <i class="bottom material-icons" @click.stop.prevent="updateCount(-1)">arrow_drop_down</i>
     </div>
+    
     <button @click="save">Sav</button>
     <button @click="delet">
       <i class="material-icons">delete_forever</i>
@@ -129,9 +130,8 @@ export default {
 <style scoped>
 .app {
   display: flex;
-  width: 500px;
   height: 50px;
-  padding: 30px;
+  padding: 20px;
   border-top: 1px solid red;
   background: #4e4f54;
 }
@@ -139,7 +139,7 @@ export default {
   outline: none;
 }
 .inputAdvance {
-  width: 190px;
+  width: 140px;
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
@@ -165,7 +165,7 @@ h2 {
   font-weight: normal;
 }
 h2:first-child {
-  width: 140px;
+  width: 100px;
 }
 h2:nth-child(2):hover {
   color: wheat;
@@ -174,7 +174,7 @@ h2:nth-child(2):hover {
 input {
   margin: 0 0px 0 10px;
   flex-basis: 100%;
-  width: 140px;
+  width: 110px;
   font-size: 20px;
   border: none;
   background-color: #f8f8f8;

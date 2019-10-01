@@ -1,16 +1,33 @@
 <template>
-  <div class="admin">
-    <div class="logo">
-      <i class="material-icons">security</i>
-      <h2>Администратор</h2>
-    </div>
-    <div>
-      <div class="name">
-        <h2>Название</h2>
-        <h2>Стоимость</h2>
-        <h2>Настройки</h2>
+  <div class="admin-wrapper">
+    <div class="admin">
+      <div class="logo">
+        <i class="material-icons">security</i>
+        <h2>Покупка</h2>
       </div>
-      <app-control v-for="(item,index) in responseMongoBuy" :key="index" :dataFromDb="item"></app-control>
+      <div>
+        <div class="name">
+          <h2>Вид</h2>
+          <h2>Стоимость</h2>
+          <h2>Настройки</h2>
+        </div>
+        <app-control v-for="(item,index) in responseMongoBuy" :key="index" :dataFromDb="item"></app-control>
+      </div>
+    </div>
+
+    <div class="admin">
+      <div class="logo">
+        <i class="material-icons">security</i>
+        <h2>Продажа</h2>
+      </div>
+      <div>
+        <div class="name">
+          <h2>Вид</h2>
+          <h2>Стоимость</h2>
+          <h2>Настройки</h2>
+        </div>
+        <app-control v-for="(item,index) in responseMongoCell" :key="index+'c'" :dataFromDb="item"></app-control>
+      </div>
     </div>
   </div>
 </template>
@@ -33,9 +50,6 @@ export default {
     }
   },
   mounted() {
-    // axios.get("http://localhost:8081").then(response => {
-    //   this.responseMongo = response.data;
-    // });
     axios.get("http://localhost:8081/Buy").then(response => {
       this.responseMongoBuy = response.data;
     });
@@ -62,38 +76,41 @@ export default {
 </script>
 
 <style scoped>
-.logo > i {
-  color: #4caf50;
-  font-size: 40px;
+div.admin-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
 }
-.admin {
+div.admin {
+  width: 450px;
   border: 4px solid red;
   border-radius: 7px;
   color: whitesmoke;
 }
-.name {
+div.name {
   display: flex;
   background: #4e4f54;
+  padding:0px 20px;
 }
-.logo {
+div.logo {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 21px;
   background: #4e4f54;
+}
+.logo > i {
+  color: #4caf50;
+  font-size: 40px;
 }
 .admin > h2 {
   text-align: center;
   font-size: 30px;
 }
 
-.name h2 {
-  padding-left: 20px;
-}
 .name h2:nth-child(1) {
-  width: 130px;
+  width: 90px;
 }
 .name h2:nth-child(2) {
-  width: 220px;
+  margin-right: auto;
 }
 </style>

@@ -2,9 +2,7 @@
   <div class="appUser">
     <table>
       <tr>
-        <th class="title" colspan="5">
-          <i class="material-icons">forward</i>Покупка
-        </th>
+        <th class="title" colspan="5">Покупка</th>
       </tr>
       <tr>
         <th>Кол-во</th>
@@ -20,7 +18,11 @@
 
         <td>
           <select name="mySelect" @change="onChangeBuy" text="ddd" v-model="selectedBuy">
-            <option v-for="(item, index) in responseMongoBuy" :key="index" :value="index">{{item.name}}</option>
+            <option
+              v-for="(item, index) in responseMongoBuy"
+              :key="index"
+              :value="index"
+            >{{item.name}}</option>
           </select>
         </td>
         <td>
@@ -28,7 +30,7 @@
         </td>
         <td>
           <button @click="buy">
-            <i class="material-icons">forward</i>Купить.
+            <i class="material-icons">redo</i> Купить
           </button>
         </td>
         <td class="summa">
@@ -39,16 +41,14 @@
 
     <table class="cell">
       <tr>
-        <th class="title" colspan="5">
-          <i class="material-icons">reply_all</i>Продажа
-        </th>
+        <th class="title" colspan="5">Продажа</th>
       </tr>
       <tr>
         <th>Кол-во</th>
         <th>Валюта</th>
         <th>Курс продажи</th>
         <th>Продажа</th>
-        <th>Итого</th>
+        <th>Итого бел.руб</th>
       </tr>
       <tr>
         <td>
@@ -56,7 +56,11 @@
         </td>
         <td>
           <select name="mySelect" @change="onChangeCell" text="ddd" v-model="selectedCell">
-            <option v-for="(item, index) in responseMongoCell" :key="index" :value="index">{{item.name}}</option>
+            <option
+              v-for="(item, index) in responseMongoCell"
+              :key="index"
+              :value="index"
+            >{{item.name}}</option>
           </select>
         </td>
         <td>
@@ -64,7 +68,7 @@
         </td>
         <td>
           <button @click="cell">
-            <i class="material-icons">reply_all</i>Продать
+            <i class="material-icons">undo</i>Продать
           </button>
         </td>
         <td class="summa">
@@ -202,7 +206,6 @@ table {
   background: #4e4f54;
   width: 100%;
   color: whitesmoke;
-  /* font-size: 20px; */
   max-width: 800px;
   border: 4px solid yellowgreen;
   border-collapse: collapse;
