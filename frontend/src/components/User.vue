@@ -3,36 +3,36 @@
     <table>
       <tr>
         <th class="title" colspan="5">
-          <i class="material-icons">redo</i>Покупка
+          <i class="material-icons">forward</i>Покупка
         </th>
       </tr>
       <tr>
         <th>Кол-во</th>
-        <th>Вал</th>
+        <th>Валюта</th>
         <th>Курс покупки</th>
         <th>Купить</th>
         <th>Итого бел.руб</th>
       </tr>
       <tr>
         <td>
-          <input v-model="inputValue" @keypress="onKeypress" />
+          <input v-model="inputValueBuy" @keypress="onKeypress" />
         </td>
 
         <td>
-          <select name="mySelect" @change="onChange" text="ddd" v-model="selected">
-            <option v-for="(item, index) in responseMongo" :key="index" :value="index">{{item.name}}</option>
+          <select name="mySelect" @change="onChangeBuy" text="ddd" v-model="selectedBuy">
+            <option v-for="(item, index) in responseMongoBuy" :key="index" :value="index">{{item.name}}</option>
           </select>
         </td>
         <td>
-          <h2>{{priceValue}} бел.руб</h2>
+          <h2>{{priceValueBuy}} бел.руб</h2>
         </td>
         <td>
           <button @click="buy">
-            <i class="material-icons">redo</i>Купить.
+            <i class="material-icons">forward</i>Купить.
           </button>
         </td>
         <td class="summa">
-          <h2>{{summa}}</h2>
+          <h2>{{summaBuy}}</h2>
         </td>
       </tr>
     </table>
@@ -40,12 +40,12 @@
     <table class="cell">
       <tr>
         <th class="title" colspan="5">
-          <i class="material-icons">undo</i>Продажа
+          <i class="material-icons">reply_all</i>Продажа
         </th>
       </tr>
       <tr>
         <th>Кол-во</th>
-        <th>Вал</th>
+        <th>Валюта</th>
         <th>Курс продажи</th>
         <th>Продажа</th>
         <th>Итого</th>
@@ -56,7 +56,7 @@
         </td>
         <td>
           <select name="mySelect" @change="onChangeCell" text="ddd" v-model="selectedCell">
-            <option v-for="(item, index) in responseMongo" :key="index" :value="index">{{item.name}}</option>
+            <option v-for="(item, index) in responseMongoCell" :key="index" :value="index">{{item.name}}</option>
           </select>
         </td>
         <td>
@@ -64,7 +64,7 @@
         </td>
         <td>
           <button @click="cell">
-            <i class="material-icons">undo</i>Продать
+            <i class="material-icons">reply_all</i>Продать
           </button>
         </td>
         <td class="summa">
@@ -85,42 +85,44 @@ import axios from "axios";
 export default {
   data() {
     return {
-      responseMongo: { name: "", price: 0 },
-      selected: 0,
+      responseMongoBuy: {},
+      responseMongoCell: {},
+      selectedBuy: 0,
       selectedCell: 0,
-      priceValue: 0,
+      priceValueBuy: 0,
       priceValueCell: 0,
-      inputValue: "",
-      summa: 0,
+      inputValueBuy: "",
+      summaBuy: 0,
       inputValueCell: "",
       summaCell: ""
     };
   },
 
   mounted() {
-    axios.get("http://localhost:8081").then(response => {
-      //   this.inputValue = response.data[0].dollar;
-      //   this.id = response.data[0]._id;
-      this.responseMongo = response.data;
-      this.priceValue = this.responseMongo[this.selected].price;
-      this.priceValueCell = this.responseMongo[this.selected].price;
+    axios.get("http://localhost:8081/Buy").then(response => {
+      this.responseMongoBuy = response.data;
+      this.priceValueBuy = this.responseMongoBuy[this.selectedBuy].price;
+    });
+    axios.get("http://localhost:8081/Cell").then(response => {
+      this.responseMongoCell = response.data;
+      this.priceValueCell = this.responseMongoCell[this.selectedCell].price;
     });
   },
   methods: {
     buy() {
-      this.summa = this.priceValue * this.inputValue;
+      this.summaBuy = this.priceValueBuy * this.inputValueBuy;
     },
     cell() {
       let integer = Math.floor(this.inputValueCell);
       this.inputValueCell = integer;
       this.summaCell = this.priceValueCell * this.inputValueCell;
     },
-    onChange() {
-      this.inputValue = "";
-      this.summa = "";
-      let item = this.responseMongo[this.selected];
+    onChangeBuy() {
+      this.inputValueBuy = "";
+      this.summaBuy = "";
+      let item = this.responseMongoBuy[this.selectedBuy];
       if (!!item) {
-        this.priceValue = item.price;
+        this.priceValueBuy = item.price;
       }
     },
     onInputSummaCell() {
@@ -128,20 +130,20 @@ export default {
     },
     onChangeCell() {
       (this.inputValueCell = ""), (this.summaCell = "");
-      let item = this.responseMongo[this.selectedCell];
+      let item = this.responseMongoCell[this.selectedCell];
       if (!!item) {
         this.priceValueCell = item.price;
       }
     },
     onKeypress(e) {
       let code = e.charCode || e.keyCode;
-      if (code < 48  || code > 57) {;
+      if (code < 48 || code > 57) {
         e.preventDefault();
       }
     },
-        onKeypressPoint(e) {
+    onKeypressPoint(e) {
       let code = e.charCode || e.keyCode;
-      if ((code < 48 && code != 46) || code > 57) {;
+      if ((code < 48 && code != 46) || code > 57) {
         e.preventDefault();
       }
     }

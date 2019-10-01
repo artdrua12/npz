@@ -10,7 +10,7 @@
         <h2>Стоимость</h2>
         <h2>Настройки</h2>
       </div>
-      <app-control v-for="(item,index) in responseMongo" :key="index" :dataFromDb="item"></app-control>
+      <app-control v-for="(item,index) in responseMongoBuy" :key="index" :dataFromDb="item"></app-control>
     </div>
   </div>
 </template>
@@ -21,7 +21,8 @@ import Control from "./Control";
 export default {
   data() {
     return {
-      responseMongo: null
+      responseMongoBuy: null,
+      responseMongoCell: null
     };
   },
   beforeRouteEnter(to, rromR, next) {
@@ -32,8 +33,14 @@ export default {
     }
   },
   mounted() {
-    axios.get("http://localhost:8081").then(response => {
-      this.responseMongo = response.data;
+    // axios.get("http://localhost:8081").then(response => {
+    //   this.responseMongo = response.data;
+    // });
+    axios.get("http://localhost:8081/Buy").then(response => {
+      this.responseMongoBuy = response.data;
+    });
+    axios.get("http://localhost:8081/Cell").then(response => {
+      this.responseMongoCell = response.data;
     });
   },
   methods: {

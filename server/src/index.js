@@ -7,7 +7,8 @@ const mongodb = require('mongodb').MongoClient;
 const jsonParser = express.json();
 const objectId = require('mongodb').ObjectID;
 
-let globalColection;
+let globalColectionBuy;
+let globalColectionCell;
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -19,30 +20,56 @@ const mongoClient = new mongodb("mongodb://localhost:27017/", {
 
 mongoClient.connect(function (err, client) {
     const db = client.db("forex");
-    const collection = db.collection("money");
-    globalColection = collection;
+    const collectionBuy = db.collection("moneyBuy");
+    const collectionCell = db.collection("moneyCell");
+    global.globalColectionBuy = collectionBuy;
+    global.globalColectionCell = collectionCell;
+
     app.listen(8081, () => console.log("Server strt on 8081 port"));
     if (err) {
-                return console.log(err);
-            }
-    // let dataMoney = [{ "name": "dollar", "price": 100 },
-    // { "name": "euro", "price": 200 },
-    // { "name": "rub", "price": 50 }, ];
-    // collection.insertMany(dataMoney, function (err, result) {
-    //     if (err) {
-    //         return console.log(err);
-    //     }
-    //     console.log(result);
-    //     client.close();
-    // });
+        return console.log(err);
+    }
+//     function myDate() {
+//         let date = new Date();
+//         return date.toLocaleString();
+//     }
+
+//     let dataMoneyBuy = [
+//         { "name": "dollar", "price": 2, "date": myDate(),"description": "add" },
+//         { "name": "euro", "price": 3, "date": myDate(),"description": "add" },
+//         { "name": "rub", "price": 0.4, "date": myDate(),"description": "add" },
+//     ];
+
+//     let dataMoneyCell = [
+//         { "name": "dollar", "price": 2.5, "date": myDate(),"description": "add" },
+//         { "name": "euro", "price": 3.5, "date": myDate(),"description": "add" },
+//         { "name": "rub", "price": 0.5, "date": myDate(),"description": "add" },
+//     ];
+
+//    collectionBuy.insertMany(dataMoneyBuy, function (err, result) {
+//         if (err) {
+//             return console.log(err);
+//         }
+//         console.log(result);
+//         client.close();
+//     });
+
+//     collectionCell.insertMany(dataMoneyCell, function (err, result) {
+//         if (err) {
+//             return console.log(err);
+//         }
+//         console.log(result);
+//         client.close();
+//     });
 });
 
 
-app.get('/', (req, res) => {
-    const collection = globalColection;
-    collection.find().toArray(function (err, dbuser) {
+app.get('/:type', (req, res) => {
+    const reqType = req.params.type;
+    const collection = global["globalColection"+reqType];
+    collection.find().toArray(function (err, dbTable) {
         if (err) return console.log(err);
-        res.send(dbuser);
+        res.send(dbTable);
     })
 })
 

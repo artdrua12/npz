@@ -15,7 +15,7 @@ import axios from "axios";
 export default {
   data() {
     return {
-      inputValue: ""
+      inputValue: "123"
     };
   },
   mounted() {
