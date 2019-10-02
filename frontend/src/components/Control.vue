@@ -19,7 +19,7 @@
       <i class="top material-icons" @click.stop.prevent="updateCount(1)">arrow_drop_up</i>
       <i class="bottom material-icons" @click.stop.prevent="updateCount(-1)">arrow_drop_down</i>
     </div>
-    
+
     <button @click="save">Sav</button>
     <button @click="delet">
       <i class="material-icons">delete_forever</i>
@@ -36,7 +36,8 @@ export default {
     },
     text: {
       default: "text"
-    }
+    },
+    type: ""
   },
   data() {
     return {
@@ -54,7 +55,7 @@ export default {
       if (code == 13) {
         this.show = false;
       }
-      if (code < 48 || code > 57) {
+      if ((code < 48 && code != 46) || code > 57) {
         e.preventDefault();
       }
     },
@@ -105,14 +106,21 @@ export default {
       axios
         .put("http://localhost:8081", {
           id: this.dataFromDb._id,
-          adminPrice: this.inputValue
+          adminPrice: this.inputValue,
+          type: this.type
         })
         .then(function(response) {
           console.log(response);
         });
     },
     delet() {
-      this.inputValue = 0;
+      let idM = this.dataFromDb._id;
+      let typeM = this.type;
+      axios
+        .delete("http://localhost:8081/" + idM + "&" + typeM, {})
+        .then(function(response) {
+          console.log(response);
+        });
     }
   },
   computed: {
@@ -131,7 +139,7 @@ export default {
 .app {
   display: flex;
   height: 50px;
-  padding: 20px;
+  padding: 15px 20px;
   border-top: 1px solid red;
   background: #4e4f54;
 }
@@ -165,7 +173,7 @@ h2 {
   font-weight: normal;
 }
 h2:first-child {
-  width: 100px;
+  width: 112px;
 }
 h2:nth-child(2):hover {
   color: wheat;

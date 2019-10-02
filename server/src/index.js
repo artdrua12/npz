@@ -7,8 +7,6 @@ const mongodb = require('mongodb').MongoClient;
 const jsonParser = express.json();
 const objectId = require('mongodb').ObjectID;
 
-let globalColectionBuy;
-let globalColectionCell;
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -29,44 +27,40 @@ mongoClient.connect(function (err, client) {
     if (err) {
         return console.log(err);
     }
-//     function myDate() {
-//         let date = new Date();
-//         return date.toLocaleString();
-//     }
 
-//     let dataMoneyBuy = [
-//         { "name": "dollar", "price": 2, "date": myDate(),"description": "add" },
-//         { "name": "euro", "price": 3, "date": myDate(),"description": "add" },
-//         { "name": "rub", "price": 0.4, "date": myDate(),"description": "add" },
-//     ];
+    //     let dataMoneyBuy = [
+    //         { "name": "dollar", "price": 2, "date":  Date.toLocaleString() ,"description": "add" },
+    //         { "name": "euro", "price": 3, "date":  Date.toLocaleString(),"description": "add" },
+    //         { "name": "rub", "price": 0.4, "date":  Date.toLocaleString(),"description": "add" },
+    //     ];
 
-//     let dataMoneyCell = [
-//         { "name": "dollar", "price": 2.5, "date": myDate(),"description": "add" },
-//         { "name": "euro", "price": 3.5, "date": myDate(),"description": "add" },
-//         { "name": "rub", "price": 0.5, "date": myDate(),"description": "add" },
-//     ];
+    //     let dataMoneyCell = [
+    //         { "name": "dollar", "price": 2.5, "date":  Date.toLocaleString(),"description": "add" },
+    //         { "name": "euro", "price": 3.5, "date":  Date.toLocaleString(),"description": "add" },
+    //         { "name": "rub", "price": 0.5, "date":  Date.toLocaleString(),"description": "add" },
+    //     ];
 
-//    collectionBuy.insertMany(dataMoneyBuy, function (err, result) {
-//         if (err) {
-//             return console.log(err);
-//         }
-//         console.log(result);
-//         client.close();
-//     });
+    //    collectionBuy.insertMany(dataMoneyBuy, function (err, result) {
+    //         if (err) {
+    //             return console.log(err);
+    //         }
+    //         console.log(result);
+    //         client.close();
+    //     });
 
-//     collectionCell.insertMany(dataMoneyCell, function (err, result) {
-//         if (err) {
-//             return console.log(err);
-//         }
-//         console.log(result);
-//         client.close();
-//     });
+    //     collectionCell.insertMany(dataMoneyCell, function (err, result) {
+    //         if (err) {
+    //             return console.log(err);
+    //         }
+    //         console.log(result);
+    //         client.close();
+    //     });
 });
 
 
 app.get('/:type', (req, res) => {
     const reqType = req.params.type;
-    const collection = global["globalColection"+reqType];
+    const collection = global["globalColection" + reqType];
     collection.find().toArray(function (err, dbTable) {
         if (err) return console.log(err);
         res.send(dbTable);
@@ -76,15 +70,48 @@ app.get('/:type', (req, res) => {
 app.put('/', jsonParser, function (req, res) {
     if (!req.body) return res.sendStatus(400);
     const id = new objectId(req.body.id);
-    console.log("data:", req.body);
     const dbAdminPrice = req.body.adminPrice;
+    const reqType = req.body.type;
+    const globalColection = global["globalColection" + reqType];
     globalColection.findOneAndUpdate(
-        { _id: id }, { $set: { price: dbAdminPrice } },
+        { _id: id }, { $set: { price: dbAdminPrice, date: Date.toLocaleString(), description: "update" } },
         { returnOriginal: false }, function (err, result) {
             if (err) return console.log('This is error', err);
             res.send(result.value);
         }
     )
+})
+
+app.post('/', jsonParser, function (req, res) {
+    if (!req.body) return res.sendStatus(400);
+    const viewIns = req.body.moneyView;
+    const priceIns = req.body.moneyPrice;
+
+    const reqType = req.body.type;
+    const globalColection = global["globalColection" + reqType];
+    let newMoney = {
+        "name": viewIns, "price": priceIns,
+        "date": Date.toLocaleString(), "description": "add"
+    }
+    console.log(newMoney);
+    globalColection.insertOne(newMoney, function (err, result) {
+        if (err) {
+            return console.log(err);
+        }
+    }
+    )
+})
+
+app.delete('/:id&:type', (req, res) => {
+    const id = new objectId(req.params.id);
+    const reqType = req.params.type;
+    const collection = global["globalColection" + reqType]; // какая таблица
+    console.log("id",id);
+        collection.findOneAndDelete({_id: id},function(err,result){
+            if(err) return console.log(err);
+            let user = result.value;
+            res.send(user);
+        })
 })
 
 process.on("SIGINT", () => {
