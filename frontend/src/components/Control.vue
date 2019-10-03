@@ -1,17 +1,16 @@
 <template>
-  <div class="app" tabindex="-1">
+  <div class="app"  v-if="showComponent">
     <h2>{{dataFromDb.name}}</h2>
-    <h2 :tabindex="1" v-show="!show" @click.stop="showClick">
+    <h2  v-show="!show" @click="showClick">
       {{counterSpace}}
       <i class="material-icons">keyboard_arrow_down</i>
     </h2>
     <div v-show="show" class="inputAdvance">
       <input
         tabindex="-1"
-        :value="inputValue"
+        v-model="inputValue"
         ref="refInput"
         @focus="onFocus"
-        @input="onInput"
         @keypress="onKeypress"
         @keydown="onKeydown"
         @click.stop="inputClick"
@@ -20,8 +19,8 @@
       <i class="bottom material-icons" @click.stop.prevent="updateCount(-1)">arrow_drop_down</i>
     </div>
 
-    <button @click="save">Sav</button>
-    <button @click="delet">
+    <button @click.stop.self="save">Sav</button>
+    <button @click.stop="delet">
       <i class="material-icons">delete_forever</i>
     </button>
   </div>
@@ -43,11 +42,14 @@ export default {
     return {
       show: false,
       oldinputValue: "",
-      inputValue: 0
+      inputValue: 0,
+      dataComponent:{},
+      showComponent:true
     };
   },
   mounted() {
     this.inputValue = this.dataFromDb.price;
+    this.dataComponent = this.dataFromDb;
   },
   methods: {
     onKeypress(e) {
@@ -89,15 +91,10 @@ export default {
     },
     updateCount(value) {
       this.$refs.refInput.focus();
-      if (this.inputValue + value >= 0) {
-        this.inputValue += value;
-      } else {
-        return;
-      }
-    },
-    onInput({ target }) {
-      let val = +target.value;
-      this.inputValue = val;
+      let integer = Number(this.inputValue)
+      if (integer + value >= 0) {
+        this.inputValue = integer + value;
+      } 
     },
     inputClick(e) {
       e.target.select();
@@ -109,18 +106,19 @@ export default {
           adminPrice: this.inputValue,
           type: this.type
         })
-        .then(function(response) {
-          console.log(response);
+        .then(function(responseS) {
+          console.log(responseS);
         });
     },
     delet() {
-      let idM = this.dataFromDb._id;
-      let typeM = this.type;
+      let idDB = this.dataFromDb._id;
+      let typeDB = this.type;
       axios
-        .delete("http://localhost:8081/" + idM + "&" + typeM, {})
-        .then(function(response) {
-          console.log(response);
+        .delete("http://localhost:8081/" + idDB + "&" + typeDB, {})
+        .then(()=> {
+          this.showComponent = false; //delete to DOM
         });
+        
     }
   },
   computed: {
@@ -198,8 +196,9 @@ button:nth-of-type(1) {
   margin-left: auto;
 }
 button {
-  margin-left: 7px;
+  margin-left: 15px;
   width: 55px;
+  max-width: 55px;
   box-shadow: 0 1px rgba(255, 255, 255, 0.2) inset, 0 3px 5px rgba(0, 1, 6, 0.5),
     0 0 1px 1px rgba(0, 1, 6, 0.2);
   outline: none;

@@ -4,7 +4,7 @@
       <img src="./assets/logo.png" />
       <router-link tag="span" to="/" exact active-class="active">Кассир</router-link>
       <router-link tag="span" to="/admin" exact active-class="active">Администратор</router-link>
-      <router-link tag="span" to="/something" exact active-class="active">О нас</router-link>
+      <router-link tag="span" to="/logs" exact active-class="active">Отчеты</router-link>
       <!-- <router-link tag="span" to="/checkForm" exact active-class="active">CheckForm</router-link> -->
     </div>
     <transition name="component-fade" mode="out-in">

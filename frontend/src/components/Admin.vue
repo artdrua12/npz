@@ -2,12 +2,12 @@
   <div class="admin-wrapper">
     <div class="admin">
       <div class="logo">
-        <i class="material-icons">security</i>
+        <i class="material-icons" @click.self="showLog('Buy')">security</i>
         <h2>Buy</h2>
       </div>
       <div>
         <div class="name">
-          <button @click="showAddMoney('Buy')">Вид</button>
+          <button @click.self="showAddMoney('Buy')">Вид</button>
           <h2>Стоимость</h2>
           <h2>Настройки</h2>
         </div>
@@ -18,30 +18,58 @@
           type="Buy"
         ></app-control>
       </div>
+      <div class="showLog" v-show="showLogBuy">
+        <table>
+          <tr>
+            <th>data</th>
+            <th>money</th>
+            <th>operation</th>
+          </tr>
+          <tr v-for="(item,index) in responseMongoBuy" :key="index">
+            <td>{{item.date}}</td>
+            <td>{{item.name}}</td>
+            <td>{{item.description}}</td>
+          </tr>
+        </table>
+      </div>
     </div>
 
     <div class="admin">
       <div class="logo">
-        <i class="material-icons">security</i>
+        <i class="material-icons" @click.self="showLog('Cell')">security</i>
         <h2>Cell</h2>
       </div>
       <div>
         <div class="name">
-          <button @click="showAddMoney('Cell')">Вид</button>
+          <button @click.self="showAddMoney('Cell')">Вид</button>
           <h2>Стоимость</h2>
           <h2>Настройки</h2>
         </div>
         <app-control
           v-for="(item,index) in responseMongoCell"
-          :key="index+'c'"
+          :key="index"
           :dataFromDb="item"
           type="Cell"
         ></app-control>
       </div>
+      <div class="showLog" v-show="showLogCell">
+        <table>
+          <tr>
+            <th>data</th>
+            <th>money</th>
+            <th>operation</th>
+          </tr>
+          <tr v-for="(item,index) in responseMongoCell" :key="index">
+            <td>{{item.date}}</td>
+            <td>{{item.name}}</td>
+            <td>{{item.description}}</td>
+          </tr>
+        </table>
+      </div>
     </div>
 
     <div class="add" v-show="show">
-      <i class="material-icons" @click="show=false">clear</i>
+      <i class="material-icons" @click.self="show=false">clear</i>
       <table>
         <tr>
           <th class="title" colspan="2">{{type}}</th>
@@ -51,13 +79,17 @@
           <th>Стоимость</th>
         </tr>
         <tr>
-          <td><input v-model="moneyView"/></td>
-          <td><input v-model="moneyPrice"/></td>
+          <td>
+            <input v-model="moneyView" />
+          </td>
+          <td>
+            <input v-model="moneyPrice" />
+          </td>
         </tr>
         <tr>
           <td></td>
           <td>
-            <button @click="addtoMongo">Добавить</button>
+            <button @click.self="addtoMongo">Добавить</button>
           </td>
         </tr>
       </table>
@@ -73,10 +105,14 @@ export default {
     return {
       responseMongoBuy: null,
       responseMongoCell: null,
+      logsMongoBuy: null,
+      logsMongoCell: null,
       show: false,
       type: "",
-      moneyView:"",
-      moneyPrice:""
+      moneyView: "",
+      moneyPrice: "",
+      showLogBuy: false,
+      showLogCell: false
     };
   },
   beforeRouteEnter(to, rromR, next) {
@@ -95,30 +131,32 @@ export default {
     });
   },
   methods: {
-    onClick() {
-      axios
-        .put("http://localhost:8081", {
-          id: this.id,
-          dollar: this.inputValue
-        })
-        .then(function(response) {
-          console.log(response);
-        });
-    },
     showAddMoney(text) {
       this.show = true;
       this.type = text;
     },
     addtoMongo() {
-      axios.post("http://localhost:8081", {
+      axios.post("http://localhost:8081/admin", {
         moneyView: this.moneyView,
         moneyPrice: this.moneyPrice,
-        type: this.type
+        typedb: this.type
       });
+
+      this.getDB(this.type);
+
+      this.moneyView = "";
+      this.moneyPrice = "";
       this.show = false;
-       axios.get("http://localhost:8081/"+this.type).then(response => {
-      this["responseMongo"+this.type] = response.data;
-    });
+    },
+    getDB(typeDB) {
+      console.log('update');
+      axios.get("http://localhost:8081/" + typeDB).then(response => {
+        this["responseMongo" + typeDB] = response.data;
+      });
+    },
+    showLog(typeLog) {
+      this.getDB(typeLog);
+      this["showLog" + typeLog] = !this["showLog" + typeLog];
     }
   },
   components: {
@@ -136,7 +174,6 @@ div.admin-wrapper {
 div.admin {
   width: 460px;
   min-width: 440px;
-  border: 4px solid red;
   border-radius: 7px;
   color: whitesmoke;
 }
@@ -145,12 +182,16 @@ div.name {
   background: #4e4f54;
   padding: 0px 20px 0px 0px;
   align-items: center;
+  border: 4px solid red;
+  border-top: none;
 }
 div.logo {
   display: flex;
   align-items: center;
   justify-content: center;
   background: #4e4f54;
+  border: 4px solid red;
+  border-bottom: none;
 }
 div.add {
   position: absolute;
@@ -162,6 +203,10 @@ div.add {
   border: 4px solid whitesmoke;
   color: whitesmoke;
 }
+div.showLog {
+  background: #4caf50;
+  width: 100%;
+}
 .add i {
   position: absolute;
   right: 10px;
@@ -171,6 +216,12 @@ div.add {
   color: #4caf50;
   font-size: 40px;
 }
+.logo i:active {
+  background: linear-gradient(rgb(76, 77, 82), rgb(56, 57, 62)) rgb(76, 77, 82);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.5) inset,
+    0 2px 3px rgba(0, 0, 0, 0.5) inset, 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
 .admin > h2 {
   text-align: center;
   font-size: 30px;
@@ -222,6 +273,7 @@ button:active {
 }
 table {
   border-spacing: 10px 7px;
+  width: 100%;
 }
 th {
   text-align: start;
