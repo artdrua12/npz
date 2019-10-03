@@ -17,7 +17,7 @@
         </td>
 
         <td>
-          <select name="mySelect" @change="onChangeBuy" text="ddd" v-model="selectedBuy">
+          <select name="mySelect" @change="onChangeBuy" v-model="selectedBuy">
             <option
               v-for="(item, index) in responseMongoBuy"
               :key="index"
@@ -98,16 +98,17 @@ export default {
       inputValueBuy: "",
       summaBuy: 0,
       inputValueCell: "",
-      summaCell: ""
+      summaCell: "",
+      arrayName: []
     };
   },
 
   mounted() {
-    axios.get("http://localhost:8081/Buy").then(response => {
+    axios.get("http://localhost:8081/admin/Buy").then(response => {
       this.responseMongoBuy = response.data;
       this.priceValueBuy = this.responseMongoBuy[this.selectedBuy].price;
     });
-    axios.get("http://localhost:8081/Cell").then(response => {
+    axios.get("http://localhost:8081/admin/Cell").then(response => {
       this.responseMongoCell = response.data;
       this.priceValueCell = this.responseMongoCell[this.selectedCell].price;
     });
@@ -115,11 +116,25 @@ export default {
   methods: {
     buy() {
       this.summaBuy = this.priceValueBuy * this.inputValueBuy;
+      axios.post("http://localhost:8081/logs", {
+        namedb: this.responseMongoBuy[this.selectedBuy].name,
+        countdb: this.inputValueBuy,
+        pricedb: this.priceValueBuy,
+        summadb: this.summaBuy,
+        typedb: "Buy"
+      });
     },
     cell() {
       let integer = Math.floor(this.inputValueCell);
       this.inputValueCell = integer;
       this.summaCell = this.priceValueCell * this.inputValueCell;
+      axios.post("http://localhost:8081/logs", {
+        namedb: this.responseMongoCell[this.selectedCell].name,
+        countdb: this.inputValueCell,
+        pricedb: this.priceValueCell,
+        summadb: this.summaCell,
+        typedb: "Cell"
+      });
     },
     onChangeBuy() {
       this.inputValueBuy = "";

@@ -27,9 +27,9 @@ mongoClient.connect(function (err, client) {
     const collectionCell = db.collection("moneyCell");
     const logsBuy = db.collection("logsBuy");
     const logsCell = db.collection("logsCell");
+
     global.globalColectionBuy = collectionBuy;
     global.globalColectionCell = collectionCell;
-
     global.globalLogsBuy = logsBuy;
     global.globalLogsCell = logsCell;
 
@@ -66,21 +66,21 @@ mongoClient.connect(function (err, client) {
     //     client.close();
     // });
 
-    ////////------------//////////////////////
+    // //------------//////////////////////
 
     // let dataLogsBuy = [
-    //     { "name": "dollar","count": 100, "price": 2, "date": curentDate(), "summa": 200 },
-    //     { "name": "euro","count": 2000, "price": 3, "date": curentDate(), "summa": 6000 },
-    //     { "name": "rub","count": 3400, "price": 0.4, "date": curentDate(), "summa": 1360 },
+    //     { "name": "dollar", "count": 100, "price": 2, "date": curentDate(), "summa": 200 },
+    //     { "name": "euro", "count": 2000, "price": 3, "date": curentDate(), "summa": 6000 },
+    //     { "name": "rub", "count": 3400, "price": 0.4, "date": curentDate(), "summa": 1360 },
     // ];
 
     // let dataLogsCell = [
-    //     { "name": "dollar","count": 100, "price": 3, "date": curentDate(), "summa": 300 },
-    //     { "name": "euro","count": 2000, "price": 4, "date": curentDate(), "summa": 8000 },
-    //     { "name": "rub","count": 3400, "price": 0.7, "date": curentDate(), "summa": 2380 },
+    //     { "name": "dollar", "count": 100, "price": 3, "date": curentDate(), "summa": 300 },
+    //     { "name": "euro", "count": 2000, "price": 4, "date": curentDate(), "summa": 8000 },
+    //     { "name": "rub", "count": 3400, "price": 0.7, "date": curentDate(), "summa": 2380 },
     // ];
 
-    // logsBuy.insertMany(dataMoneyBuy, function (err, result) {
+    // logsBuy.insertMany(dataLogsBuy, function (err, result) {
     //     if (err) {
     //         return console.log(err);
     //     }
@@ -88,7 +88,7 @@ mongoClient.connect(function (err, client) {
     //     client.close();
     // });
 
-    // logsCell.insertMany(dataMoneyCell, function (err, result) {
+    // logsCell.insertMany(dataLogsCell, function (err, result) {
     //     if (err) {
     //         return console.log(err);
     //     }
@@ -99,9 +99,18 @@ mongoClient.connect(function (err, client) {
 });
 
 
-app.get('/:type', (req, res) => {
+app.get('/admin/:type', (req, res) => {
     const reqType = req.params.type;
     const collection = global["globalColection" + reqType];
+    collection.find().toArray(function (err, dbTable) {
+        if (err) return console.log(err);
+        res.send(dbTable);
+    })
+})
+
+app.get('/logs/:type', (req, res) => {
+    const reqType = req.params.type;
+    const collection = global["globalLogs" + reqType];
     collection.find().toArray(function (err, dbTable) {
         if (err) return console.log(err);
         res.send(dbTable);
@@ -127,15 +136,36 @@ app.post('/admin', jsonParser, function (req, res) {
     if (!req.body) return res.sendStatus(400);
     const viewIns = req.body.moneyView;
     const priceIns = req.body.moneyPrice;
-
     const reqType = req.body.typedb;
+
     const globalColection = global["globalColection" + reqType];
     let newMoney = {
         "name": viewIns, "price": priceIns,
         "date": curentDate(), "description": "add"
     }
-    console.log(newMoney);
+    console.log("insert", viewIns);
     globalColection.insertOne(newMoney, function (err, result) {
+        if (err) {
+            return console.log(err);
+        }
+    }
+    )
+})
+
+app.post('/logs', jsonParser, function (req, res) {
+    if (!req.body) return res.sendStatus(400);
+    const name = req.body.namedb;
+    const count = req.body.countdb;
+    const price = req.body.pricedb;
+    const summa = req.body.summadb;
+    const reqType = req.body.typedb;
+    const globalColection = global["globalLogs" + reqType];
+    let newLogs = {
+        "name": name, "count":count, "price": price,
+        "date": curentDate(), "summa": summa
+    }
+    console.log("insert logs");
+    globalColection.insertOne(newLogs, function (err, result) {
         if (err) {
             return console.log(err);
         }
@@ -147,21 +177,11 @@ app.delete('/:id&:type', (req, res) => {
     const id = new objectId(req.params.id);
     const reqType = req.params.type;
     const collection = global["globalColection" + reqType]; // какая таблица
-    console.log("id", id);
+    console.log(" delete id", id);
     collection.findOneAndDelete({ _id: id }, function (err, result) {
         if (err) return console.log(err);
         let user = result.value;
         res.send(user);
-    })
-})
-////------------------////
-
-app.get('user/:type', (req, res) => {
-    const reqType = req.params.type;
-    const collection = global["globalColection" + reqType];
-    collection.find().toArray(function (err, dbTable) {
-        if (err) return console.log(err);
-        res.send(dbTable);
     })
 })
 

@@ -1,7 +1,7 @@
 <template>
-  <div class="app"  v-if="showComponent">
+  <div class="app" v-if="showComponent">
     <h2>{{dataFromDb.name}}</h2>
-    <h2  v-show="!show" @click="showClick">
+    <h2 v-show="!show" @click.stop.self="showClick">
       {{counterSpace}}
       <i class="material-icons">keyboard_arrow_down</i>
     </h2>
@@ -43,13 +43,11 @@ export default {
       show: false,
       oldinputValue: "",
       inputValue: 0,
-      dataComponent:{},
-      showComponent:true
+      showComponent: true
     };
   },
   mounted() {
     this.inputValue = this.dataFromDb.price;
-    this.dataComponent = this.dataFromDb;
   },
   methods: {
     onKeypress(e) {
@@ -91,10 +89,10 @@ export default {
     },
     updateCount(value) {
       this.$refs.refInput.focus();
-      let integer = Number(this.inputValue)
+      let integer = Number(this.inputValue);
       if (integer + value >= 0) {
         this.inputValue = integer + value;
-      } 
+      }
     },
     inputClick(e) {
       e.target.select();
@@ -115,10 +113,10 @@ export default {
       let typeDB = this.type;
       axios
         .delete("http://localhost:8081/" + idDB + "&" + typeDB, {})
-        .then(()=> {
-          this.showComponent = false; //delete to DOM
+        .then(response => {
+          console.log(response);
         });
-        
+      this.showComponent = false; //delete to DOM
     }
   },
   computed: {

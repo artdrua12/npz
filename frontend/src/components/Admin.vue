@@ -2,18 +2,18 @@
   <div class="admin-wrapper">
     <div class="admin">
       <div class="logo">
-        <i class="material-icons" @click.self="showLog('Buy')">security</i>
+        <i class="material-icons" @click.stop.self="showLog('Buy')">security</i>
         <h2>Buy</h2>
       </div>
       <div>
         <div class="name">
-          <button @click.self="showAddMoney('Buy')">Вид</button>
+          <button @click.stop.self="showAddMoney('Buy')">Вид</button>
           <h2>Стоимость</h2>
           <h2>Настройки</h2>
         </div>
         <app-control
-          v-for="(item,index) in responseMongoBuy"
-          :key="index"
+          v-for="(item) in responseMongoBuy"
+          :key="item._id"
           :dataFromDb="item"
           type="Buy"
         ></app-control>
@@ -36,18 +36,18 @@
 
     <div class="admin">
       <div class="logo">
-        <i class="material-icons" @click.self="showLog('Cell')">security</i>
+        <i class="material-icons" @click.stop.self="showLog('Cell')">security</i>
         <h2>Cell</h2>
       </div>
       <div>
         <div class="name">
-          <button @click.self="showAddMoney('Cell')">Вид</button>
+          <button @click.stop.self="showAddMoney('Cell')">Вид</button>
           <h2>Стоимость</h2>
           <h2>Настройки</h2>
         </div>
         <app-control
-          v-for="(item,index) in responseMongoCell"
-          :key="index"
+          v-for="(item) in responseMongoCell"
+          :key="item._id"
           :dataFromDb="item"
           type="Cell"
         ></app-control>
@@ -69,7 +69,7 @@
     </div>
 
     <div class="add" v-show="show">
-      <i class="material-icons" @click.self="show=false">clear</i>
+      <i class="material-icons" @click.stop.self="show=false">clear</i>
       <table>
         <tr>
           <th class="title" colspan="2">{{type}}</th>
@@ -89,7 +89,7 @@
         <tr>
           <td></td>
           <td>
-            <button @click.self="addtoMongo">Добавить</button>
+            <button @click.stop.self="addtoMongo">Добавить</button>
           </td>
         </tr>
       </table>
@@ -123,10 +123,10 @@ export default {
     }
   },
   mounted() {
-    axios.get("http://localhost:8081/Buy").then(response => {
+    axios.get("http://localhost:8081/admin/Buy").then(response => {
       this.responseMongoBuy = response.data;
     });
-    axios.get("http://localhost:8081/Cell").then(response => {
+    axios.get("http://localhost:8081/admin/Cell").then(response => {
       this.responseMongoCell = response.data;
     });
   },
@@ -149,8 +149,8 @@ export default {
       this.show = false;
     },
     getDB(typeDB) {
-      console.log('update');
-      axios.get("http://localhost:8081/" + typeDB).then(response => {
+      console.log("update");
+      axios.get("http://localhost:8081/admin/" + typeDB).then(response => {
         this["responseMongo" + typeDB] = response.data;
       });
     },
@@ -173,7 +173,7 @@ div.admin-wrapper {
 }
 div.admin {
   width: 460px;
-  min-width: 440px;
+  min-width: 420px;
   border-radius: 7px;
   color: whitesmoke;
 }
